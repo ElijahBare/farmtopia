@@ -1,0 +1,85 @@
+[gd_scene load_steps=13 format=3 uid="uid://b6w1xn4a6b0gw"]
+
+[ext_resource type="Texture2D" uid="uid://dokdq7cutf031" path="res://assets/capi_right .png" id="1_p0t6p"]
+[ext_resource type="Texture2D" uid="uid://d0nbia56qmetn" path="res://assets/capi_left.png" id="1_q15bx"]
+[ext_resource type="Script" path="res://scripts/entity/capi.gd" id="1_y7b60"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ejpgy"]
+atlas = ExtResource("1_q15bx")
+region = Rect2(0, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dvumk"]
+atlas = ExtResource("1_q15bx")
+region = Rect2(80, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6hv5a"]
+atlas = ExtResource("1_q15bx")
+region = Rect2(160, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_deg65"]
+atlas = ExtResource("1_q15bx")
+region = Rect2(240, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m15vw"]
+atlas = ExtResource("1_p0t6p")
+region = Rect2(0, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3slvf"]
+atlas = ExtResource("1_p0t6p")
+region = Rect2(80, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1kqb"]
+atlas = ExtResource("1_p0t6p")
+region = Rect2(160, 0, 80, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bxj2x"]
+atlas = ExtResource("1_p0t6p")
+region = Rect2(240, 0, 80, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_js5aa"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ejpgy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dvumk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6hv5a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_deg65")
+}],
+"loop": true,
+"name": &"left",
+"speed": 2.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m15vw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3slvf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1kqb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bxj2x")
+}],
+"loop": true,
+"name": &"right",
+"speed": 1.2
+}]
+
+[node name="capi" type="CharacterBody2D"]
+script = ExtResource("1_y7b60")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.3, 0.3)
+sprite_frames = SubResource("SpriteFrames_js5aa")
+animation = &"left"
+frame_progress = 0.417149
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]

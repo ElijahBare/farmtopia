@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://k4aooh0uwdsj"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="coords" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+scale = Vector2(14.2597, 7.99554)

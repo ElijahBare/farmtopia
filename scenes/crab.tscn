@@ -1,0 +1,86 @@
+[gd_scene load_steps=12 format=3 uid="uid://d2qvii2ivlh51"]
+
+[ext_resource type="Script" path="res://scripts/entity/crab.gd" id="1_2og53"]
+[ext_resource type="Texture2D" uid="uid://cyx6y468avxpg" path="res://assets/crab.png" id="1_ib55w"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_85t6n"]
+atlas = ExtResource("1_ib55w")
+region = Rect2(0, 0, 33, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4wxda"]
+atlas = ExtResource("1_ib55w")
+region = Rect2(33, 0, 33, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_14ow5"]
+atlas = ExtResource("1_ib55w")
+region = Rect2(66, 0, 33, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y0vfw"]
+atlas = ExtResource("1_ib55w")
+region = Rect2(99, 0, 33, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kkmih"]
+atlas = ExtResource("1_ib55w")
+region = Rect2(132, 0, 33, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jfrqi"]
+atlas = ExtResource("1_ib55w")
+region = Rect2(165, 0, 33, 28)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_35frj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_85t6n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4wxda")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_14ow5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y0vfw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kkmih")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jfrqi")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="Animation" id="Animation_j3mqv"]
+resource_name = "new_animation"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_11csn"]
+_data = {
+"new_animation": SubResource("Animation_j3mqv")
+}
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_2og53")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_35frj")
+frame_progress = 0.0226857
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_11csn")
+}

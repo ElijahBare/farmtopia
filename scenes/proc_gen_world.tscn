@@ -1,0 +1,100 @@
+[gd_scene load_steps=12 format=3 uid="uid://dhptvycu3kb8x"]
+
+[ext_resource type="Script" path="res://scripts/proc_gen_world.gd" id="1_bdevv"]
+[ext_resource type="TileSet" uid="uid://0c6kxpetkkr0" path="res://data/tileset.tres" id="2_5e5w1"]
+[ext_resource type="Script" path="res://scripts/multiplayer/PacketHandler.gd" id="3_rw2pl"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_4b5vf"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sy7ip"]
+noise = SubResource("FastNoiseLite_4b5vf")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wcc4y"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_amuao"]
+noise = SubResource("FastNoiseLite_wcc4y")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_t2xtc"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_pw1nk"]
+noise = SubResource("FastNoiseLite_t2xtc")
+
+[sub_resource type="Theme" id="Theme_ooehh"]
+default_font_size = 30
+
+[sub_resource type="Theme" id="Theme_3hoxd"]
+default_font_size = 80
+
+[node name="proc_gen_world" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_bdevv")
+noise_texture = SubResource("NoiseTexture2D_sy7ip")
+tree_noise_texture = SubResource("NoiseTexture2D_amuao")
+decorator_noise_texture = SubResource("NoiseTexture2D_pw1nk")
+
+[node name="MultiPlayerHud" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.401287, 0.253152)
+theme = SubResource("Theme_ooehh")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MultiPlayerHud"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="JoinGame" type="Button" parent="MultiPlayerHud/VBoxContainer"]
+layout_mode = 2
+text = "Join
+"
+
+[node name="HostGame" type="Button" parent="MultiPlayerHud/VBoxContainer"]
+layout_mode = 2
+text = "Host
+"
+
+[node name="TextEdit" type="TextEdit" parent="MultiPlayerHud"]
+layout_mode = 0
+offset_left = 72.0
+offset_right = 436.0
+offset_bottom = 103.0
+theme = SubResource("Theme_3hoxd")
+placeholder_text = "127.0.0.1"
+
+[node name="TileMap" type="TileMap" parent="."]
+y_sort_enabled = true
+tile_set = ExtResource("2_5e5w1")
+format = 2
+layer_0/name = "water"
+layer_0/z_index = -1
+layer_1/name = "ground"
+layer_1/z_index = -1
+layer_1/tile_data = PackedInt32Array()
+layer_2/name = "ground2"
+layer_2/z_index = -1
+layer_2/tile_data = PackedInt32Array()
+layer_3/name = "cliff"
+layer_3/y_sort_enabled = true
+layer_3/y_sort_origin = 16
+layer_3/tile_data = PackedInt32Array()
+layer_4/name = "environment"
+layer_4/y_sort_enabled = true
+layer_4/tile_data = PackedInt32Array()
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://scenes/multi_player_player.tscn")
+spawn_path = NodePath("../Players")
+spawn_limit = 1000
+
+[node name="Players" type="Node2D" parent="."]
+
+[node name="PacketHandler" type="Node2D" parent="."]
+script = ExtResource("3_rw2pl")
+
+[connection signal="pressed" from="MultiPlayerHud/VBoxContainer/JoinGame" to="." method="_on_join_game_pressed"]
+[connection signal="pressed" from="MultiPlayerHud/VBoxContainer/HostGame" to="." method="_on_host_game_pressed"]
