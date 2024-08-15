@@ -1,23 +1,23 @@
 [gd_scene load_steps=12 format=3 uid="uid://dhptvycu3kb8x"]
 
-[ext_resource type="Script" path="res://scripts/proc_gen_world.gd" id="1_bdevv"]
-[ext_resource type="TileSet" uid="uid://0c6kxpetkkr0" path="res://data/tileset.tres" id="2_5e5w1"]
-[ext_resource type="Script" path="res://scripts/multiplayer/PacketHandler.gd" id="3_rw2pl"]
+[ext_resource type="Script" path="res://scripts/proc_gen_world.gd" id="1_h12yq"]
+[ext_resource type="TileSet" uid="uid://0c6kxpetkkr0" path="res://data/tileset.tres" id="2_ptt3v"]
+[ext_resource type="Script" path="res://scripts/multiplayer/PacketHandler.gd" id="3_fsgd6"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_4b5vf"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_orrvh"]
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sy7ip"]
-noise = SubResource("FastNoiseLite_4b5vf")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_j82s2"]
+noise = SubResource("FastNoiseLite_orrvh")
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_wcc4y"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gjulu"]
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_amuao"]
-noise = SubResource("FastNoiseLite_wcc4y")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nu1xi"]
+noise = SubResource("FastNoiseLite_gjulu")
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_t2xtc"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_vvdqq"]
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_pw1nk"]
-noise = SubResource("FastNoiseLite_t2xtc")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dn6r3"]
+noise = SubResource("FastNoiseLite_vvdqq")
 
 [sub_resource type="Theme" id="Theme_ooehh"]
 default_font_size = 30
@@ -25,12 +25,12 @@ default_font_size = 30
 [sub_resource type="Theme" id="Theme_3hoxd"]
 default_font_size = 80
 
-[node name="proc_gen_world" type="Node2D"]
+[node name="World" type="Node2D"]
 y_sort_enabled = true
-script = ExtResource("1_bdevv")
-noise_texture = SubResource("NoiseTexture2D_sy7ip")
-tree_noise_texture = SubResource("NoiseTexture2D_amuao")
-decorator_noise_texture = SubResource("NoiseTexture2D_pw1nk")
+script = ExtResource("1_h12yq")
+noise_texture = SubResource("NoiseTexture2D_j82s2")
+tree_noise_texture = SubResource("NoiseTexture2D_nu1xi")
+decorator_noise_texture = SubResource("NoiseTexture2D_dn6r3")
 
 [node name="MultiPlayerHud" type="Control" parent="."]
 unique_name_in_owner = true
@@ -68,7 +68,7 @@ placeholder_text = "127.0.0.1"
 
 [node name="TileMap" type="TileMap" parent="."]
 y_sort_enabled = true
-tile_set = ExtResource("2_5e5w1")
+tile_set = ExtResource("2_ptt3v")
 format = 2
 layer_0/name = "water"
 layer_0/z_index = -1
@@ -94,7 +94,7 @@ spawn_limit = 1000
 [node name="Players" type="Node2D" parent="."]
 
 [node name="PacketHandler" type="Node2D" parent="."]
-script = ExtResource("3_rw2pl")
+script = ExtResource("3_fsgd6")
 
 [connection signal="pressed" from="MultiPlayerHud/VBoxContainer/JoinGame" to="." method="_on_join_game_pressed"]
 [connection signal="pressed" from="MultiPlayerHud/VBoxContainer/HostGame" to="." method="_on_host_game_pressed"]

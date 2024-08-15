@@ -28,7 +28,7 @@ func randomize_direction():
 	match random_value:
 		0:
 			direction = Vector2.LEFT
-			animation_tree.play("l	eft")
+			animation_tree.play("left")
 		1:
 			direction = Vector2.RIGHT
 			animation_tree.play("right")

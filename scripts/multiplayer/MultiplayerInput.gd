@@ -1,7 +1,7 @@
 extends MultiplayerSynchronizer
 
 @onready var player = $"."
-@onready var packet_handler = preload("res://scripts/multiplayer/PacketHandler.gd").new()
+@onready var packet_handler = get_tree().current_scene.find_child("PacketHandler")
 
 var input_direction: Vector2 = Vector2.ZERO
 @export var transmit_interval: float = 0.1

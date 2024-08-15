@@ -17,6 +17,6 @@ func to_dict() -> Dictionary:
 	}
 
 func process(world: Node) -> void:
-	var player_input = world.get_node("Players/" + str(player_id) + "/MultiplayerInput")
+	var player_input = world.get_node_or_null("Players/" + str(player_id) + "/MultiplayerInput")
 	if player_input:
 		player_input.handle_update_position_packet(self)

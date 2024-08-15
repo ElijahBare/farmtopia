@@ -36,19 +36,20 @@ var players = []  # Dynamically track players
 var world_file_path = "user://save_file.dat"
 
 func _ready():
+
 	packet_handler.world = $"."
 
 	
 	if OS.has_feature("dedicated_server"):
+
 		MultiplayerManager.become_host()
 	
-	# Delay setup to ensure all nodes are ready
-	call_deferred("setup_world")
+
 
 func setup_world():
 	packet_handler.setup_packets()
 	
-	if is_multiplayer_authority() or OS.has_feature("dedicated_server"):
+	if (is_multiplayer_authority() or OS.has_feature("dedicated_server")):
 		print("Server is network master. Initializing chunk generation.")
 		initialize_server()
 	else:
@@ -56,14 +57,30 @@ func setup_world():
 		multiplayer.peer_connected.connect(self._on_peer_connected)
 
 func initialize_server():
+	print("Loading World...")
+	var data = load_world()	
 	noise = noise_texture.noise
 	tree_noise = tree_noise_texture.noise
 	decorator_noise = decorator_noise_texture.noise
-		
+	
+	if len(data.keys()) > 0:
+		noise.seed = data.values()[0]
+		tree_noise.seed = data.values()[1]
+		decorator_noise.seed = data.values()[2]
+	else:
+		noise.seed = randi()
+		tree_noise.seed = randi()
+		decorator_noise.seed = randi()
 	# Add your spawners here
-	add_spawner("rock", "res://scenes/rock.tscn", func(x, y): return randi_range(0, 800) == 0 and noise.get_noise_2d(x,y) < 0.6 and noise.get_noise_2d(x,y) > .15)
-	add_spawner("desert_rock", "res://scenes/desert_rock.tscn", func(x, y): return decorator_noise.get_noise_2d(x, y) > 0.5 and randi_range(0, 100) == 0 and noise.get_noise_2d(x,y) < 0.15 and noise.get_noise_2d(x,y) > 0)
-		
+	add_spawner("rock", "res://scenes/entities/rock.tscn", func(x, y): 
+		return randf() < 0.00125 and noise.get_noise_2d(x,y) > 0.15 and noise.get_noise_2d(x,y) < 0.6)
+
+	add_spawner("capybara", "res://scenes/entities/capi.tscn", func(x, y): 
+		return randf() < 0.0005 and noise.get_noise_2d(x,y) > 0.15 and noise.get_noise_2d(x,y) < 0.6)
+	
+	add_spawner("desert_rock", "res://scenes/entities/desert_rock.tscn", func(x, y): 
+		return randf() < 0.0025 and noise.get_noise_2d(x,y) > 0 and noise.get_noise_2d(x,y) < 0.15)
+	
 	update_players_list()
 	
 	# Start processing chunks in the next frame
@@ -82,7 +99,7 @@ func _process(_delta):
 	process_chunk_queue()
 
 func update_players_list():
-	players = get_tree().current_scene.get_node("Players").get_children()
+	players = get_tree().get_current_scene().find_child("Players").get_children()
 
 func update_chunks_for_all_players():
 	for player_obj in players:
@@ -131,9 +148,9 @@ func generate_tile_data(x: int, y: int):
 			tile_data["random_grass"] = {layer = ground_2_layer, atlas = random_grass_atlas_arr.pick_random()}
 	elif noise_val > 0:
 		tile_data["sand"] = {layer = ground_1_layer, terrain = 3}
-	if tree_noise_val > 0.9 and noise_val > 0.3 and noise_val < 0.5:
+	if randi_range(0,100) == 0 and noise_val > 0.3 and noise_val < 0.5:
 		tile_data["tree"] = {layer = environment_layer, atlas = tree_atlas2}
-	elif noise_val > 0 and noise_val < 0.18 and tree_noise_val > 0.95:
+	elif noise_val > 0 and noise_val < 0.18 and randi_range(0,200) == 0:
 		tile_data["palm"] = {layer = environment_layer, atlas = tree_atlas}
 
 	for spawner in spawners:
@@ -149,6 +166,7 @@ func add_spawner(name: String, scene_path: String, condition: Callable):
 		"condition": condition
 	})
 
+
 func spawn_object(scene_path: String, pos: Vector2):
 	var scene = load(scene_path) as PackedScene
 	var instance: Node2D = scene.instantiate()
@@ -161,7 +179,8 @@ func spawn_object(scene_path: String, pos: Vector2):
 
 	if is_multiplayer_authority():
 		packet_handler.send_packet(SpawnObjectPacket.new({"scene_path": scene_path, "pos": pos}))
-
+		print(scene_path)
+		
 func world_to_chunk(pos: Vector2) -> Vector2:
 	return Vector2(floor(pos.x / (chunk_size * 16)), floor(pos.y / (chunk_size * 16)))
 
@@ -201,38 +220,51 @@ func reconstruct_chunk_data(chunk_pos: Vector2) -> Dictionary:
 	return chunk_data
 
 func save_world():
-	if is_multiplayer_authority():
-		var save_file = FileAccess.open(world_file_path, FileAccess.WRITE)
-		if save_file:
-			save_file.store_32(noise.seed)
-			save_file.store_32(tree_noise.seed)
-			save_file.store_32(decorator_noise.seed)
+	var save_file = FileAccess.open(world_file_path, FileAccess.WRITE)
+	if save_file:
+		save_file.store_32(noise.seed)
+		save_file.store_32(tree_noise.seed)
+		save_file.store_32(decorator_noise.seed)
+	
+		var layers = [water_layer, ground_1_layer, ground_2_layer, cliff_layer, environment_layer]
+		var tile_count = 0
+		var tile_data = []
 		
-			var layers = [water_layer, ground_1_layer, ground_2_layer, cliff_layer, environment_layer]
-			for layer in layers:
-				for cell_pos in tile_map.get_used_cells(layer):
-					save_file.store_float(cell_pos.x)
-					save_file.store_float(cell_pos.y)
-					save_file.store_32(layer)
-					save_file.store_8(tile_map.get_cell_source_id(layer, cell_pos))
-			
-			save_file.store_32(spawned_entities.size())
-			for scene_path in spawned_entities:
-				save_file.store_pascal_string(scene_path)
-				save_file.store_32(spawned_entities[scene_path].size())
-				for pos in spawned_entities[scene_path]:
-					save_file.store_float(pos.x)
-					save_file.store_float(pos.y)
-			
-			save_file.store_32(generated_chunks.size())
-			for chunk_pos in generated_chunks:
-				save_file.store_float(chunk_pos.x)
-				save_file.store_float(chunk_pos.y)
-			
-			save_file.close()
-			print("World saved successfully")
-		else:
-			print("Failed to save world")
+		for layer in layers:
+			for cell_pos in tile_map.get_used_cells(layer):
+				tile_count += 1
+				var cell_atlas_coords = tile_map.get_cell_atlas_coords(layer, cell_pos)
+				tile_data.append({
+					"pos": cell_pos,
+					"layer": layer,
+					"atlas": cell_atlas_coords
+				})
+		
+		save_file.store_32(tile_count)
+		for tile in tile_data:
+			save_file.store_float(tile["pos"].x)
+			save_file.store_float(tile["pos"].y)
+			save_file.store_32(tile["layer"])
+			save_file.store_8(tile["atlas"].x)  
+			save_file.store_8(tile["atlas"].y)  
+		
+		save_file.store_32(spawned_entities.size())
+		for scene_path in spawned_entities:
+			save_file.store_pascal_string(scene_path)
+			save_file.store_32(spawned_entities[scene_path].size())
+			for pos in spawned_entities[scene_path]:
+				save_file.store_float(pos.x)
+				save_file.store_float(pos.y)
+		
+		save_file.store_32(generated_chunks.size())
+		for chunk_pos in generated_chunks:
+			save_file.store_float(chunk_pos.x)
+			save_file.store_float(chunk_pos.y)
+		
+		save_file.close()
+		print("World saved successfully")
+	else:
+		print("Failed to save world")
 
 func load_world() -> Dictionary:
 	if FileAccess.file_exists(world_file_path):
@@ -244,14 +276,18 @@ func load_world() -> Dictionary:
 			
 			tile_map.clear()
 
-			while not save_file.eof_reached():
+			# Read tile data
+			var tile_count = save_file.get_32()  # Add this line to store the number of tiles
+			for _i in range(tile_count):
 				var cell_x = save_file.get_float()
 				var cell_y = save_file.get_float()
 				var layer = save_file.get_32()
-				var cell_value = save_file.get_8()
+				var cell_value_x = save_file.get_8()
+				var cell_value_y = save_file.get_8()
 				var cell_pos = Vector2i(cell_x, cell_y)
-				tile_map.set_cell(layer, cell_pos, cell_value)
+				tile_map.set_cell(layer, cell_pos, 0, Vector2i(cell_value_x, cell_value_y))  # Assuming the atlas coordinates are stored in cell_value
 			
+			# Read entity data
 			var entity_types_count = save_file.get_32()
 			for _i in range(entity_types_count):
 				var scene_path = save_file.get_pascal_string()
@@ -260,21 +296,21 @@ func load_world() -> Dictionary:
 				for _j in range(entity_count):
 					var x = save_file.get_float()
 					var y = save_file.get_float()
-					spawned_entities[scene_path].append(Vector2(x, y))
-					spawn_object(scene_path, Vector2(x, y))
+					var pos = Vector2(x, y)
+					spawned_entities[scene_path].append(pos)
+					spawn_object(scene_path, pos)
 			
+			# Read chunk data
 			var chunk_count = save_file.get_32()
 			for _i in range(chunk_count):
 				var chunk_x = save_file.get_float()
 				var chunk_y = save_file.get_float()
 				var chunk_pos = Vector2(chunk_x, chunk_y)
 				generated_chunks[chunk_pos] = true
-				
-				var chunk_data = generate_chunk_data(chunk_pos)
-				apply_chunk_data(chunk_pos, chunk_data)
+				# Don't regenerate chunk data, just mark it as generated
 			
 			save_file.close()
-			print("World loaded and chunks cached successfully")
+			print("World loaded successfully")
 			
 			return {
 				"noise_seed": loaded_noise_seed,
@@ -282,14 +318,14 @@ func load_world() -> Dictionary:
 				"decorator_noise_seed": loaded_decorator_noise_seed
 			}
 		else:
-			print("Failed to load world")
+			print("Failed to open world file")
 	else:
 		print("No world file found")
 	
 	return {}
 
 func _on_peer_connected(id: int):
-	print(str("id") + " connected!")
+
 	if is_multiplayer_authority():
 		for chunk_pos in generated_chunks.keys():
 			var chunk_data = get_chunk_data(chunk_pos)
@@ -300,8 +336,11 @@ func _on_peer_connected(id: int):
 			for pos in spawned_entities[scene_path]:
 				packet_handler.send_packet(SpawnObjectPacket.new({"scene_path": scene_path, "pos": pos}))
 
-func _exit_tree():
-	save_world()
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		if is_multiplayer_authority() and len(generated_chunks) > 0.:
+			save_world()
 
 # Client-side functions
 func on_chunk_generated(chunk_pos, chunk_data):
@@ -322,6 +361,7 @@ func apply_tile_data(pos: Vector2, tile_data: Dictionary):
 		
 		for spawner in spawners:
 			if typeof(key) != TYPE_STRING:
+				print(spawner.name)
 				continue
 			if key == spawner["name"] and tile_data.get(key, false) == true:
 				spawn_object(spawner["scene_path"], pos)
@@ -335,13 +375,13 @@ func apply_tile_data(pos: Vector2, tile_data: Dictionary):
 		if "terrain" in data:
 			tile_map.set_cells_terrain_connect(data["layer"], [pos], data["terrain"], 0)
 
-func request_movement(direction: Vector2):
-	if multiplayer.is_connected_to_host():
-		packet_handler.send_packet
 
 
 func _on_join_game_pressed():
+	call_deferred("setup_world")
 	MultiplayerManager.join_as_player_2()
 
 func _on_host_game_pressed():
+
+	call_deferred("setup_world")
 	MultiplayerManager.become_host()

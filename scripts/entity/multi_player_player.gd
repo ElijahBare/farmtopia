@@ -4,6 +4,8 @@ extends CharacterBody2D
 @onready var animation_tree = $AnimationTree
 @onready var coords_display = $Camera2D/coord_hud/label
 
+@onready var tilemap: TileMap = get_tree().current_scene.find_child("TileMap")
+
 var direction : Vector2 = Vector2.ZERO
 
 # Assuming water tiles are on a specific tile layer, e.g., layer 0
@@ -33,13 +35,13 @@ func _process(delta):
 func _physics_process(delta):
 	direction = %MultiplayerSynchronizer.input_direction
 
-	if direction:
+	var proposed_position = position + direction * SPEED * delta
+	var tile_pos = tilemap.local_to_map(proposed_position)
+	
+	if tilemap.get_cell_source_id(1, tile_pos) != -1:
 		velocity = direction * SPEED
-	else:
-		velocity = Vector2.ZERO
-	
-	
-	move_and_slide()
+
+		move_and_slide()
 
 
 func update_animation_parameters():

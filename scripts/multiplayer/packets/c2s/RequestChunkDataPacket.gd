@@ -26,5 +26,6 @@ func process(world: Node) -> void:
 		})
 		
 		# Get the PacketHandler and send the response
-		var packet_handler = world.get_node("PacketHandler")
-		packet_handler.send_packet(chunk_generated_packet)
+		var packet_handler = world.get_node_or_null("PacketHandler")
+		if packet_handler:
+			packet_handler.send_packet(chunk_generated_packet)

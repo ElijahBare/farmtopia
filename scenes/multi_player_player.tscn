@@ -1,8 +1,8 @@
 [gd_scene load_steps=30 format=3 uid="uid://bg1rd2a6usop4"]
 
-[ext_resource type="Texture2D" uid="uid://1tsrkrwoexmj" path="res://assets/new_character.png" id="1_d4s1l"]
 [ext_resource type="Script" path="res://scripts/entity/multi_player_player.gd" id="1_ehvt2"]
 [ext_resource type="Script" path="res://scripts/multiplayer/MultiplayerInput.gd" id="2_cwuoa"]
+[ext_resource type="Texture2D" uid="uid://1tsrkrwoexmj" path="res://assets/new_character.png" id="3_oxd3i"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_cice6"]
 properties/0/path = NodePath(".:position")
@@ -314,7 +314,7 @@ script = ExtResource("2_cwuoa")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -10)
-texture = ExtResource("1_d4s1l")
+texture = ExtResource("3_oxd3i")
 flip_h = true
 hframes = 24
 frame = 1

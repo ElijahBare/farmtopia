@@ -11,10 +11,10 @@ var direction : Vector2 = Vector2.ZERO
 var move_timer : float = 0.0
 
 func _ready():
-	add_to_group("saveable_entities", true)
+
 
 	if is_multiplayer_authority():
-		rpc_config("update_client", MultiplayerAPI.RPC_MODE_ANY_PEER)
+		#rpc_config("update_client", MultiplayerAPI.RPC_MODE_ANY_PEER)
 		# Defer initialization to ensure the node is ready
 		call_deferred("_init_rpc")
 	else:

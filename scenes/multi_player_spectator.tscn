@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://cpi4vn1y8ug3s"]
+
+[ext_resource type="Script" path="res://scripts/entity/multi_player_spectator.gd" id="1_thm5a"]
+[ext_resource type="Script" path="res://scripts/multiplayer/MultiplayerInput.gd" id="2_aymoe"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_cice6"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_x47ki"]
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+visible = false
+script = ExtResource("1_thm5a")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+unique_name_in_owner = true
+replication_config = SubResource("SceneReplicationConfig_cice6")
+script = ExtResource("2_aymoe")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -6)
+scale = Vector2(6.05769, 1.49206)
+
+[node name="coord_hud" type="Control" parent="Camera2D"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -30.5397
+offset_top = -68.0268
+offset_right = 9.46031
+offset_bottom = -28.0268
+scale = Vector2(0.419755, 0.50953)
+metadata/_edit_use_anchors_ = true
+
+[node name="label" type="Label" parent="Camera2D/coord_hud"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+scale = Vector2(0.208255, 0.473858)
+label_settings = SubResource("LabelSettings_x47ki")
+metadata/_edit_use_anchors_ = true

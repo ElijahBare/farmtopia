@@ -34,8 +34,7 @@ func receive_packet(type: String, data: Dictionary) -> void:
 
 func send_packet(packet: Packet) -> void:
 	if not world:
-		#push_error("World reference not set in PacketHandler")
-		print(packet.packet_type)		
+		push_error("World reference not set in PacketHandler")
 		return	
 	
 	if packet is C2SPacket and not world.multiplayer.is_server():
