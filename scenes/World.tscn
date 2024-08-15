@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://dhptvycu3kb8x"]
+[gd_scene load_steps=13 format=3 uid="uid://dhptvycu3kb8x"]
 
 [ext_resource type="Script" path="res://scripts/proc_gen_world.gd" id="1_h12yq"]
 [ext_resource type="TileSet" uid="uid://0c6kxpetkkr0" path="res://data/tileset.tres" id="2_ptt3v"]
+[ext_resource type="Script" path="res://scenes/TileMap.gd" id="3_crly5"]
 [ext_resource type="Script" path="res://scripts/multiplayer/PacketHandler.gd" id="3_fsgd6"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_orrvh"]
@@ -85,6 +86,7 @@ layer_3/tile_data = PackedInt32Array()
 layer_4/name = "environment"
 layer_4/y_sort_enabled = true
 layer_4/tile_data = PackedInt32Array()
+script = ExtResource("3_crly5")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://scenes/multi_player_player.tscn")

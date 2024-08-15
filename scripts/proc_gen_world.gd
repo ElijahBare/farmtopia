@@ -179,7 +179,7 @@ func spawn_object(scene_path: String, pos: Vector2):
 
 	if is_multiplayer_authority():
 		packet_handler.send_packet(SpawnObjectPacket.new({"scene_path": scene_path, "pos": pos}))
-		print(scene_path)
+		#print(scene_path)
 		
 func world_to_chunk(pos: Vector2) -> Vector2:
 	return Vector2(floor(pos.x / (chunk_size * 16)), floor(pos.y / (chunk_size * 16)))
