@@ -64,6 +64,7 @@ offset_left = 72.0
 offset_right = 436.0
 offset_bottom = 103.0
 theme = SubResource("Theme_3hoxd")
+text = "143.198.114.12:2007"
 placeholder_text = "127.0.0.1"
 
 [node name="TileMap" type="TileMap" parent="."]

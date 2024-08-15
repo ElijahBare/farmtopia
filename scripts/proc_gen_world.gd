@@ -48,8 +48,8 @@ func _ready():
 
 func setup_world():
 	packet_handler.setup_packets()
-	
-	if (is_multiplayer_authority() or OS.has_feature("dedicated_server")):
+	var debug = true
+	if (OS.has_feature("dedicated_server") or (is_multiplayer_authority() and debug)):
 		print("Server is network master. Initializing chunk generation.")
 		initialize_server()
 	else:
@@ -110,7 +110,7 @@ func update_chunks_for_all_players():
 				for y in range(player_chunk.y - render_distance, player_chunk.y + render_distance + 1):
 					var chunk_pos = Vector2(x, y)
 					if not generated_chunks.has(chunk_pos) and not chunk_pos in chunk_generation_queue:
-						print("Queuing new chunk for player: ", chunk_pos)
+						#print("Queuing new chunk for player: ", chunk_pos)
 						chunk_generation_queue.append(chunk_pos)
 
 func process_chunk_queue():
@@ -348,7 +348,7 @@ func on_chunk_generated(chunk_pos, chunk_data):
 		for tile_pos in chunk_data:
 			apply_tile_data(tile_pos, chunk_data[tile_pos])
 		generated_chunks[chunk_pos] = true
-		print("Chunk generated and applied on client:", chunk_pos)
+		#print("Chunk generated and applied on client:", chunk_pos)
 		
 
 func apply_chunk_data(chunk_pos, chunk_data):
@@ -382,6 +382,5 @@ func _on_join_game_pressed():
 	MultiplayerManager.join_as_player_2()
 
 func _on_host_game_pressed():
-
 	call_deferred("setup_world")
 	MultiplayerManager.become_host()

@@ -21,9 +21,9 @@ func become_host():
 	multiplayer_mode_enabled = true
 	host_mode_enabled = true
 	
-	var server_peer = ENetMultiplayerPeer.new()
+	var server_peer = WebSocketMultiplayerPeer.new()
 	server_peer.create_server(2007)
-	server_peer.set_bind_ip("0.0.0.0")
+
 	multiplayer.multiplayer_peer = server_peer
 	
 	multiplayer.peer_connected.connect(_add_player_to_game)
@@ -35,14 +35,20 @@ func become_host():
 	
 func join_as_player_2():
 	print("Player 2 joining")
-	var SERVER_IP = get_tree().get_current_scene().get_node_or_null("MultiPlayerHud/TextEdit").text.split(":")[0]
-	var SERVER_PORT = int(get_tree().get_current_scene().get_node_or_null("MultiPlayerHud/TextEdit").text.split(":")[1])
+	var SERVER_IP = get_tree().get_current_scene().get_node_or_null("MultiPlayerHud/TextEdit")
 
 	
 	multiplayer_mode_enabled = true
 	
-	var client_peer = ENetMultiplayerPeer.new()
-	client_peer.create_client(SERVER_IP, SERVER_PORT)
+	 
+	var client_peer = WebSocketMultiplayerPeer.new()
+	client_peer.encode_buffer_max_size = client_peer.encode_buffer_max_size*32
+	client_peer.outbound_buffer_size = client_peer.outbound_buffer_size*32
+	client_peer.inbound_buffer_size = client_peer.inbound_buffer_size* 32
+	client_peer.max_queued_packets = client_peer.max_queued_packets * 4
+	
+	client_peer.create_client("ws://" + str(SERVER_IP.text))
+	
 	
 	multiplayer.multiplayer_peer = client_peer
 	
@@ -67,7 +73,7 @@ func _add_player_to_game(id: int):
 		var camera = player_to_add.get_node_or_null("Camera2D")
 		camera.make_current()
 		
-		
+	
 		
 
 func _add_spectator_to_game(id: int):
@@ -76,8 +82,8 @@ func _add_spectator_to_game(id: int):
 	
 	_players_spawn_node.add_child(player_to_add, true)
 	world_scene._on_peer_connected(id)
-	
-	# If this is the local player, enable their camera
+	#
+	## If this is the local player, enable their camera
 	if id == multiplayer.get_unique_id():
 		var camera = player_to_add.get_node_or_null("Camera2D")
 		camera.make_current()
