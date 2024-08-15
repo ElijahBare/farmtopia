@@ -41,7 +41,7 @@ func _ready():
 
 	
 	if OS.has_feature("dedicated_server"):
-
+		setup_world()
 		MultiplayerManager.become_host()
 	
 
